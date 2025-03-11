@@ -3,12 +3,7 @@ from .models import Product, Collection, ProductImage, Review, Cart, CartItem, O
 from decimal import Decimal
 from django.db import transaction
 from .signals import order_created
-# Сериализер - это класс, который передовит ОБЪЕКТ из базы данных в JSON
 
-# id title
-# class CollectionSerializer(serializers.Serializer):
-#     id = serializers.IntegerField()
-#     title = serializers.CharField(max_length=255)
 
 
 class CollectionSerializer(serializers.ModelSerializer):
@@ -19,29 +14,6 @@ class CollectionSerializer(serializers.ModelSerializer):
     products_count = serializers.IntegerField(read_only=True) # Менять нельзя. Только смотреть
 
 
-# class ProductSerializer(serializers.Serializer):
-#     # Указывать какие поля хотите видеть в ответе
-#     id = serializers.IntegerField()
-#     title = serializers.CharField(max_length=255)
-#     price = serializers.DecimalField(max_digits=6, decimal_places=2,
-#                                      source='unit_price')
-#     price_with_tax = serializers.SerializerMethodField(
-#         method_name='calculate_tax'
-#     )
-#
-#     # Как вывести категорию
-#     # collection = serializers.PrimaryKeyRelatedField(
-#     #     queryset=Collection.objects.all()  # Диапазон поиска в связи
-#     # )
-#
-#     # Строковое представление
-#     # collection = serializers.StringRelatedField()
-#     # collection = CollectionSerializer()
-#     collection = serializers.HyperlinkedRelatedField(
-#         queryset=Collection.objects.all(), view_name='collection-detail'
-#     )
-#     def calculate_tax(self, product: Product):
-#         return round(product.unit_price * Decimal(1.1),   2)
 
 class ProductImageSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
@@ -72,7 +44,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
     def create(self, validated_data):
-        # validated_data - данные отправленные на сохранение
+        
         product = Product(**validated_data) # Как kwargs - словарь отправляем
         product.other = 1
         product.save()
@@ -88,14 +60,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = ['id', 'date', 'name', 'description']
-    #   {
-    #         'id': 1,
-    #         'date': '16-05-2023',
-    #         'name': 'Евгений',
-    #         'description': 'Лучший товар'
-    #    }
-    # Логика сохранения. Нам надо принимать все данные и вытаскивать
-    # id товара из контекста
+   
     def create(self, validated_data):
         product_id = self.context['product_id']
         return Review.objects.create(product_id=product_id, **validated_data)
@@ -103,9 +68,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 
-# Так как мы разботаем с REST API то нам надо отправлять JSON
 
-# 1) - Переделать <QuerySet> ->  JSON Где в Meta мы указываем какие поля видим
 
 class SimpleProductSerializer(serializers.ModelSerializer):
     class Meta:
@@ -140,45 +103,12 @@ class CartSerializer(serializers.ModelSerializer):
         model = Cart
         fields = ['id', 'items', 'total_price']
 
-'''
-cart/27bda4c0-3577-4188-be11-a9e3cc808dbe/
 
 
-{
-    'id': 27bda4c0-3577-4188-be11-a9e3cc808dbe,
-    'items': [
-        {
-            'id': 1,
-            'quantity': 10,
-            'total_price': 1000,
-            'product':  {
-                "id": 1002,
-                "title": "7up Diet, 355 Ml123",
-                "unit_price": 100,
-            } 
-        },
-        {
-            'id': 1,
-            'quantity': 10,
-            'total_price': 1000,
-            'product':  {
-                "id": 1002,
-                "title": "7up Diet, 355 Ml123",
-                "unit_price": 100,
-            } 
-        }
-    ],
-    'total_price': 2000
-}
-
-
-'''
-
-# Отдельный сериалайзер для добавления товара в корзину
 class AddCartItemSerializer(serializers.ModelSerializer):
     product_id = serializers.IntegerField()
 
-    # Сделаем метод который будет проверять есть ли товар по поданному id
+ 
     def validate_product_id(self, value):
         if not Product.objects.filter(pk=value).exists(): # Если нет товара
             raise serializers.ValidationError('Нет товара с данным id')
@@ -206,7 +136,7 @@ class AddCartItemSerializer(serializers.ModelSerializer):
 
 
 
-# Отдельный сериалайзер для обновления кол-ва товаров
+
 class UpdateCartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
