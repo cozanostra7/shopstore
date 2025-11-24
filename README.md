@@ -1,5 +1,5 @@
-#Quick overview
-#Tech stack
+# Quick overview
+# Tech stack
 Python + Django
 
 Django REST Framework (DRF)
@@ -11,7 +11,7 @@ SQLite/Postgres (any Django-supported DB)
 Image uploads (Django ImageField) — make sure MEDIA_ROOT is configured
 
 Uses Django models, ModelViewSets, serializers, and DRF permissions
-#What it includes
+# What it includes
 Models: Product, Collection, Promotion, Customer, Cart, CartItem, Order, OrderItem, Review, ProductImage, Address
 
 Serializers: Model serializers and custom serializers for cart and order flows
@@ -22,7 +22,7 @@ Business logic: add-to-cart merging, create order from cart with DB transaction,
 
 Validators & signals: validate_file_size (image file validator) and order_created signal hook (project contains signals.py referenced)
 
-#Installation & setup
+# Installation & setup
 
 git clone https://github.com/cozanostra7/shopstore
 cd shopstore
